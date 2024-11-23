@@ -1,12 +1,32 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+import razorpay
 
 app = FastAPI()
 
-@app.get("/")
-def read_root():
-    return {"message": "Hello, FastAPI on AWS!"}
+RAZORPAY_KEY_ID = "rzp_live_KALYap1siGOvfH"
+RAZORPAY_KEY_SECRET = "b0geCIuxYSyLtTpaW9xUnZiV"
 
+razorpay_client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: str = None):
-    return {"item_id": item_id, "q": q}
+# Define request structure for subscription creation
+class SubscriptionRequest(BaseModel):
+    plan_id: str  # Razorpay Plan ID
+    customer_notify: int = 1  # Notify customer (1 = Yes, 0 = No)
+    total_count: int = 120  # Number of billing cycles (e.g., 12 for 1 year)
+    notes: dict = {}  # Optional metadata
+
+# Endpoint to create Razorpay subscription
+@app.post("/create-subscription")
+def create_subscription(request: SubscriptionRequest):
+    try:
+        # Create subscription on Razorpay
+        subscription = razorpay_client.subscription.create({
+            "plan_id": request.plan_id,
+            "customer_notify": request.customer_notify,
+            "total_count": request.total_count,
+            "notes": request.notes,
+        })
+        return subscription
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
