@@ -1,11 +1,20 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import razorpay
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
 RAZORPAY_KEY_ID = "rzp_live_KALYap1siGOvfH"
 RAZORPAY_KEY_SECRET = "b0geCIuxYSyLtTpaW9xUnZiV"
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Replace "*" with specific origins in production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 razorpay_client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
 
@@ -19,6 +28,7 @@ class SubscriptionRequest(BaseModel):
 # Endpoint to create Razorpay subscription
 @app.post("/create-subscription")
 def create_subscription(request: SubscriptionRequest):
+    print("API Called")
     try:
         # Create subscription on Razorpay
         subscription = razorpay_client.subscription.create({
