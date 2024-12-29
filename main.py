@@ -5,8 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-RAZORPAY_KEY_ID = "rzp_live_KALYap1siGOvfH"
-RAZORPAY_KEY_SECRET = "b0geCIuxYSyLtTpaW9xUnZiV"
+RAZORPAY_KEY_ID = "rzp_live_EAvzuQ7vxdvCpX"
+RAZORPAY_KEY_SECRET = "c8mI2L6iRzRjAk7ssZ7ZmQde"
 
 app.add_middleware(
     CORSMiddleware,
